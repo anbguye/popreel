@@ -70,7 +70,7 @@ export default function Sidebar() {
       </nav>
       <Button
         size="lg"
-        className="w-full bg-primary hover:bg-primary/90 text-white rounded-md mb-4"
+        className="w-full bg-gradient-to-r from-blue-500 to-pink-500 hover:from-blue-400 hover:to-pink-400 text-white rounded-md mb-4 transition-all border-0"
       >
         Log in
       </Button>

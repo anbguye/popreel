@@ -5,7 +5,7 @@ import Sidebar from "./components/Sidebar"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "TikTok Clone",
+  title: "PopReel",
   description: "A TikTok clone created with Next.js",
 }
 
