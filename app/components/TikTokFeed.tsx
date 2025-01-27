@@ -9,7 +9,7 @@ export default function TikTokFeed() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [visiblePostId, setVisiblePostId] = useState<string>("");
-  const observerRef = useRef<IntersectionObserver>();
+  const observerRef = useRef<IntersectionObserver | null>(null);
   const loadingRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
