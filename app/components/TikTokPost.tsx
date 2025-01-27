@@ -34,6 +34,7 @@ export default function TikTokPost({
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(1);
+  const [previousVolume, setPreviousVolume] = useState(1);
   const [isHovering, setIsHovering] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -68,12 +69,26 @@ export default function TikTokPost({
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!videoRef.current) return;
+
+    if (isMuted) {
+      // Unmuting - restore previous volume
+      setVolume(previousVolume);
+      videoRef.current.volume = previousVolume;
+    } else {
+      // Muting - save current volume
+      setPreviousVolume(volume);
+      setVolume(0);
+      videoRef.current.volume = 0;
+    }
     setIsMuted(!isMuted);
     videoRef.current.muted = !isMuted;
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
+    if (newVolume > 0) {
+      setPreviousVolume(newVolume);
+    }
     setVolume(newVolume);
     if (videoRef.current) {
       videoRef.current.volume = newVolume;
@@ -109,6 +124,8 @@ export default function TikTokPost({
             autoPlay
             onClick={togglePlay}
           />
+          {/* Dark Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none rounded-2xl" />
           {/* Play/Pause Overlay */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             {!isPlaying && (
@@ -152,8 +169,8 @@ export default function TikTokPost({
                   cursor: pointer;
                 }
                 input[type="range"]::-moz-range-thumb {
-                  width: 1px;
-                  height: 1px;
+                  width: 12px;
+                  height: 12px;
                   background: white;
                   border-radius: 50%;
                   cursor: pointer;
@@ -185,7 +202,7 @@ export default function TikTokPost({
               />
               <div>
                 <div className="flex items-center gap-1">
-                  <span className="font-semibold hover:underline cursor-pointer">
+                  <span className="font-semibold hover:underline cursor-pointer text-white">
                     {username}
                   </span>
                   {verified && (
@@ -198,9 +215,9 @@ export default function TikTokPost({
                     </svg>
                   )}
                 </div>
-                <p className="text-sm">{description}</p>
+                <p className="text-sm text-white/90">{description}</p>
                 <p className="text-sm mt-2">
-                  <span className="text-gray-400">♫ {songTitle}</span>
+                  <span className="text-white/70">♫ {songTitle}</span>
                 </p>
               </div>
             </div>
