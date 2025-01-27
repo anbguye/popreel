@@ -1,40 +1,86 @@
-import TikTokPost from "./TikTokPost"
+"use client";
 
-const mockPosts = [
-  {
-    id: "1",
-    username: "barstoolsports",
-    description: "The spinning 🍜 @You Gotta Try This (via:@Cyrus Banks )",
-    likes: "149.6K",
-    comments: "1171",
-    bookmarks: "7010",
-    shares: "29.5K",
-    videoSrc: "/placeholder.mp4",
-    userAvatar: "/placeholder.svg?height=40&width=40",
-    verified: true,
-    songTitle: "original sound - barstoolsports",
-  },
-  {
-    id: "2",
-    username: "creator",
-    description: "Another amazing TikTok! #dance #viral",
-    likes: "50.2K",
-    comments: "892",
-    bookmarks: "3240",
-    shares: "12.1K",
-    videoSrc: "/placeholder.mp4",
-    userAvatar: "/placeholder.svg?height=40&width=40",
-    songTitle: "original sound - creator",
-  },
-]
+import { useEffect, useState, useRef } from "react";
+import TikTokPost from "./TikTokPost";
+import { TikTokPost as TikTokPostType, fetchPosts } from "@/lib/data";
 
 export default function TikTokFeed() {
+  const [posts, setPosts] = useState<TikTokPostType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [visiblePostId, setVisiblePostId] = useState<string>("");
+  const observerRef = useRef<IntersectionObserver>();
+  const loadingRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Load initial posts
+    fetchPosts(1).then(setPosts);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !loading) {
+            setLoading(true);
+            fetchPosts(page + 1).then((newPosts) => {
+              setPosts((prev) => [...prev, ...newPosts]);
+              setPage((p) => p + 1);
+              setLoading(false);
+            });
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (loadingRef.current) {
+      observer.observe(loadingRef.current);
+    }
+
+    observerRef.current = observer;
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [page, loading]);
+
+  // Set up intersection observer for videos
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const postId = entry.target.getAttribute("data-post-id");
+          if (entry.isIntersecting && postId) {
+            setVisiblePostId(postId);
+          }
+        });
+      },
+      {
+        threshold: 0.6, // Video should be 60% visible before playing
+      }
+    );
+
+    const postElements = document.querySelectorAll("[data-post-id]");
+    postElements.forEach((element) => observer.observe(element));
+
+    return () => observer.disconnect();
+  }, [posts]);
+
   return (
     <div className="ml-[340px] snap-y snap-mandatory h-screen overflow-y-scroll">
-      {mockPosts.map((post) => (
-        <TikTokPost key={post.id} {...post} />
+      {posts.map((post) => (
+        <div key={post.id} data-post-id={post.id}>
+          <TikTokPost {...post} isVisible={post.id === visiblePostId} />
+        </div>
       ))}
+      <div ref={loadingRef} className="h-20 flex items-center justify-center">
+        {loading && (
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
+        )}
+      </div>
     </div>
-  )
+  );
 }
-
