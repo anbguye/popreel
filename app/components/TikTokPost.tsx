@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Heart, MessageCircle, Bookmark, Share2 } from "lucide-react";
+import {
+  Heart,
+  MessageCircle,
+  Bookmark,
+  Share2,
+  Volume2,
+  VolumeX,
+  Play,
+} from "lucide-react";
 import Image from "next/image";
 import { TikTokPost as TikTokPostType } from "@/lib/data";
 
@@ -23,16 +31,20 @@ export default function TikTokPost({
   isVisible = false,
 }: TikTokPostProps) {
   const [isLiked, setIsLiked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [volume, setVolume] = useState(1);
+  const [isHovering, setIsHovering] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!videoRef.current) return;
 
     if (isVisible) {
-      videoRef.current.play().catch(() => {
-        // Autoplay might be blocked by browser
-        console.log("Autoplay blocked");
+      videoRef.current.play().catch((error) => {
+        console.log("Autoplay error:", error);
       });
       setIsPlaying(true);
     } else {
@@ -41,7 +53,8 @@ export default function TikTokPost({
     }
   }, [isVisible]);
 
-  const togglePlay = () => {
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!videoRef.current) return;
 
     if (isPlaying) {
@@ -52,6 +65,35 @@ export default function TikTokPost({
     setIsPlaying(!isPlaying);
   };
 
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    setIsMuted(!isMuted);
+    videoRef.current.muted = !isMuted;
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (videoRef.current) {
+      videoRef.current.volume = newVolume;
+      setIsMuted(newVolume === 0);
+    }
+  };
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setIsHovering(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsHovering(false);
+    }, 300);
+  };
+
   return (
     <div className="flex justify-center h-[100vh] snap-center">
       <div className="flex flex-col md:flex-row gap-3 md:gap-6 h-full items-center w-full md:w-auto px-2 md:px-0">
@@ -59,24 +101,77 @@ export default function TikTokPost({
         <div className="relative w-full md:w-[650px] h-[calc(100vh-120px)] md:h-[calc(100vh-32px)]">
           <video
             ref={videoRef}
-            className="w-full h-full object-cover rounded-2xl"
+            className="w-full h-full object-cover rounded-2xl cursor-pointer"
             src={videoSrc}
             loop
             playsInline
+            muted={isMuted}
+            autoPlay
             onClick={togglePlay}
           />
+          {/* Play/Pause Overlay */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             {!isPlaying && (
               <div className="w-16 h-16 bg-black/50 rounded-full flex items-center justify-center">
-                <svg
-                  className="w-8 h-8 text-white"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
+                <Play className="w-8 h-8 text-white" />
               </div>
             )}
+          </div>
+          {/* Volume Control */}
+          <div
+            className="absolute bottom-20 right-4 flex flex-col items-center"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {/* Volume Slider */}
+            <div
+              className={`mb-5 w-8 h-28 bg-gray-900/80 rounded-full p-2 transition-opacity duration-200 flex items-center justify-center ${
+                isHovering ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+            >
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={volume}
+                onChange={handleVolumeChange}
+                className="w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer origin-center -rotate-90"
+                style={{
+                  WebkitAppearance: "none",
+                }}
+              />
+              <style jsx>{`
+                input[type="range"]::-webkit-slider-thumb {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 12px;
+                  height: 12px;
+                  background: white;
+                  border-radius: 50%;
+                  cursor: pointer;
+                }
+                input[type="range"]::-moz-range-thumb {
+                  width: 1px;
+                  height: 1px;
+                  background: white;
+                  border-radius: 50%;
+                  cursor: pointer;
+                  border: none;
+                }
+              `}</style>
+            </div>
+            {/* Volume Button */}
+            <button
+              onClick={toggleMute}
+              className="w-10 h-10 bg-gray-900/80 rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+            >
+              {isMuted || volume === 0 ? (
+                <VolumeX className="w-5 h-5" />
+              ) : (
+                <Volume2 className="w-5 h-5" />
+              )}
+            </button>
           </div>
           {/* User Info and Description */}
           <div className="absolute left-4 bottom-4 right-20">
@@ -133,9 +228,16 @@ export default function TikTokPost({
             </div>
             <span className="text-xs mt-1">{comments}</span>
           </button>
-          <button className="flex flex-col items-center">
+          <button
+            className="flex flex-col items-center"
+            onClick={() => setIsBookmarked(!isBookmarked)}
+          >
             <div className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center hover:bg-gray-800">
-              <Bookmark className="w-6 h-6" />
+              <Bookmark
+                className={`w-6 h-6 ${
+                  isBookmarked ? "text-blue-500 fill-blue-500" : ""
+                }`}
+              />
             </div>
             <span className="text-xs mt-1">{bookmarks}</span>
           </button>

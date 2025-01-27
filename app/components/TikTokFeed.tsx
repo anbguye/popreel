@@ -70,7 +70,7 @@ export default function TikTokFeed() {
   }, [posts]);
 
   return (
-    <div className="ml-[340px] snap-y snap-mandatory h-screen overflow-y-scroll">
+    <div className="md:ml-[340px] snap-y snap-mandatory h-screen overflow-y-scroll">
       {posts.map((post) => (
         <div key={post.id} data-post-id={post.id}>
           <TikTokPost {...post} isVisible={post.id === visiblePostId} />
