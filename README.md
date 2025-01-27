@@ -1,8 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PopReel
+
+PopReel is a modern video-sharing platform inspired by TikTok, built with Next.js 14 and TypeScript. It features a sleek, responsive design and smooth video playback experience.
+
+## Features
+
+- 📱 Responsive design that works on both desktop and mobile
+- 🎥 Smooth video playback with autoplay on scroll
+- 🔊 Advanced volume controls with memory feature
+- ❤️ Interactive elements (like, bookmark, share)
+- 🎨 Beautiful gradient UI elements
+- 🔄 Infinite scroll for continuous content
+- 🎵 Song attribution and user verification badges
+- 🌓 Dark mode optimized interface
+
+## Tech Stack
+
+- **Framework**: Next.js 14
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Icons**: Lucide Icons
+- **State Management**: React Hooks
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/popreel.git
+cd popreel
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
@@ -10,15 +49,37 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/app` - Next.js app router pages and layouts
+- `/components` - Reusable UI components
+- `/lib` - Utility functions and data services
+- `/public` - Static assets
+- `/styles` - Global styles and Tailwind configuration
+
+## Key Components
+
+- `TikTokPost` - Main video player component with interactive features
+- `TikTokFeed` - Infinite scroll feed with intersection observer
+- `Sidebar` - Navigation and user interface component
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Design inspired by TikTok
+- Video content from Google Cloud Storage sample videos
+- Avatar generation by DiceBear API
 
 ## Learn More
 
