@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Heart, MessageCircle, Bookmark, Share2, ChevronUp, ChevronDown } from "lucide-react"
+import { Heart, MessageCircle, Bookmark, Share2} from "lucide-react"
 import Image from "next/image"
 
 interface TikTokPostProps {
