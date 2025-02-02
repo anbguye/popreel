@@ -1,5 +1,5 @@
 
-(can maybe finish missing items in the project if it's not finished so that your project is a complete project and not a half-baked project)
+(can maybe work on implementing the login if you haven't done that already)
 
 
 # PopReel
