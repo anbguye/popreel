@@ -1,3 +1,7 @@
+
+(can maybe finish missing items in the project if it's not finished so that your project is a complete project and not a half-baked project)
+
+
 # PopReel
 
 PopReel is a modern video-sharing platform inspired by TikTok, built with Next.js 14 and TypeScript. It features a sleek, responsive design and smooth video playback experience.
