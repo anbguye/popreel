@@ -1,5 +1,5 @@
 
-(can maybe work on implementing the login if you haven't done that already)
+(can maybe work on implementing the login if you haven't done that already, and maybe then include it with the features in the readme file here)
 
 
 # PopReel
