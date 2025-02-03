@@ -1,3 +1,7 @@
+
+(can maybe work on implementing the login if you haven't done that already, and maybe then include it with the features in the readme file here)
+
+
 # PopReel
 
 PopReel is a modern video-sharing platform inspired by TikTok, built with Next.js 14 and TypeScript. It features a sleek, responsive design and smooth video playback experience.
